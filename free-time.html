@@ -1,0 +1,1138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Time Optimizer</title>
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --surface: #141418;
+    --surface2: #1c1c22;
+    --surface3: #22222a;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e2e2ec;
+    --muted: #5a5a72;
+    --muted2: #8a8aaa;
+    --c-islam: #c9a84c;
+    --c-swe:   #5ba3d9;
+    --c-lang:  #72c472;
+    --c-rest:  #8f7ec8;
+    --c-ent:   #e07a6e;
+    --c-eng:   #4ecdc4;
+    --font-ui: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-display: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    padding: 28px 18px 80px;
+    overflow-x: hidden;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  header { margin-bottom: 40px; padding-top: 8px; }
+  .eyebrow { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  h1 { font-family: var(--font-display); font-size: clamp(30px,8vw,50px); font-weight: 800; line-height: 0.95; letter-spacing: -1px; }
+  h1 span { display: block; color: var(--muted); font-weight: 400; font-size: 0.5em; letter-spacing: -0.5px; margin-top: 10px; line-height: 1.4; }
+
+  /* LABEL */
+  .label { font-size: 9px; letter-spacing: 3.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+
+  /* CONTEXT ROW */
+  .context-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    scrollbar-width: none;
+  }
+  .context-scroll::-webkit-scrollbar { display: none; }
+  .ctx-btn {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted2);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .ctx-btn:hover { border-color: var(--border2); color: var(--text); }
+  .ctx-btn.active { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+
+  /* TIME ROW */
+  .time-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 28px;
+    scrollbar-width: none;
+  }
+  .time-scroll::-webkit-scrollbar { display: none; }
+  .time-btn {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted2);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+  }
+  .time-btn:hover { border-color: var(--border2); color: var(--text); }
+  .time-btn.active { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+
+  /* ENERGY */
+  .energy-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 32px; }
+  .e-btn {
+    padding: 14px 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted2);
+    font-family: var(--font-ui);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .e-btn .bars { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .e-btn .bar { width: 3px; border-radius: 1px; background: currentColor; opacity: 0.35; transition: opacity 0.2s; }
+  .e-btn[data-energy="high"]   .bar:nth-child(1){height:4px} .e-btn[data-energy="high"]   .bar:nth-child(2){height:8px} .e-btn[data-energy="high"]   .bar:nth-child(3){height:12px}
+  .e-btn[data-energy="medium"] .bar:nth-child(1){height:4px} .e-btn[data-energy="medium"] .bar:nth-child(2){height:8px} .e-btn[data-energy="medium"] .bar:nth-child(3){height:6px}
+  .e-btn[data-energy="low"]    .bar:nth-child(1){height:4px} .e-btn[data-energy="low"]    .bar:nth-child(2){height:5px} .e-btn[data-energy="low"]    .bar:nth-child(3){height:3px}
+  .e-btn[data-energy="dead"]   .bar:nth-child(1){height:3px} .e-btn[data-energy="dead"]   .bar:nth-child(2){height:3px} .e-btn[data-energy="dead"]   .bar:nth-child(3){height:3px}
+  .e-btn:hover { border-color: var(--border2); color: var(--text); }
+  .e-btn.active { background: var(--surface2); border-color: currentColor; }
+  .e-btn.active .bar { opacity: 1; }
+  .e-btn[data-energy="high"].active   { color: var(--c-swe); }
+  .e-btn[data-energy="medium"].active { color: var(--c-islam); }
+  .e-btn[data-energy="low"].active    { color: var(--c-lang); }
+  .e-btn[data-energy="dead"].active   { color: var(--muted2); }
+
+  /* SUGGESTION */
+  .suggestion-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+    animation: fadeUp 0.3s ease;
+  }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+  .suggestion-card .accent-line {
+    position: absolute; top:0; left:0; right:0;
+    height: 2px;
+    background: var(--accent, var(--c-islam));
+  }
+  .s-tag { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent, var(--c-islam)); margin-bottom: 10px; }
+  .s-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+  .s-context-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    font-size: 9px;
+    color: var(--muted2);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .s-desc { font-size: 11px; color: var(--muted2); line-height: 1.7; margin-bottom: 14px; }
+  .s-resources { display: flex; flex-direction: column; gap: 8px; }
+  .s-resource {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 9px;
+    padding: 11px 14px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+    text-decoration: none;
+  }
+  .s-resource:hover { border-color: var(--accent, var(--c-islam)); background: var(--surface3); }
+  .s-res-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .s-res-info { flex: 1; min-width: 0; }
+  .s-res-name { font-size: 11px; color: var(--text); font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-res-sub { font-size: 9px; color: var(--muted); letter-spacing: 0.5px; }
+  .s-res-arrow { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+  .s-duration { margin-top: 14px; font-size: 10px; color: var(--muted); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+  .s-duration::before { content: ''; display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: var(--accent, var(--c-islam)); }
+
+  .empty-state {
+    padding: 32px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .empty-state .big { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--surface2); margin-bottom: 10px; letter-spacing: -1px; }
+
+  /* SHUFFLE */
+  .shuffle-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-bottom: 40px;
+  }
+  .shuffle-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  /* SECTION TABS */
+  .section-tabs {
+    display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+    margin-bottom: 20px; scrollbar-width: none;
+  }
+  .section-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted2);
+    font-family: var(--font-ui);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .tab-btn:hover { color: var(--text); border-color: var(--border2); }
+  .tab-btn.active { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+  .tab-btn[data-tab="islam"].active  { color: var(--c-islam); border-color: var(--c-islam); }
+  .tab-btn[data-tab="swe"].active    { color: var(--c-swe);   border-color: var(--c-swe); }
+  .tab-btn[data-tab="arabic"].active { color: var(--c-lang);  border-color: var(--c-lang); }
+  .tab-btn[data-tab="english"].active{ color: var(--c-eng);   border-color: var(--c-eng); }
+  .tab-btn[data-tab="ent"].active    { color: var(--c-ent);   border-color: var(--c-ent); }
+
+  /* RESOURCE MANAGER */
+  .res-section { display: none; }
+  .res-section.active { display: block; }
+
+  .add-res-btn {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 1px dashed var(--border2);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-bottom: 10px;
+  }
+  .add-res-btn:hover { border-color: var(--text); color: var(--text); }
+
+  .res-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+
+  .res-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .res-item-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .res-item-info { flex: 1; min-width: 0; }
+  .res-item-name { font-size: 12px; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .res-item-meta { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+  .res-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .res-open-btn {
+    padding: 5px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--muted2);
+    font-family: var(--font-ui);
+    font-size: 9px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .res-open-btn:hover { color: var(--text); border-color: var(--border2); }
+  .res-del-btn {
+    padding: 5px 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .res-del-btn:hover { color: #e07a6e; border-color: #e07a6e44; }
+
+  /* ENT SECTION */
+  .ent-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .ent-tag {
+    padding: 5px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted2);
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.5px;
+  }
+  .ent-tag:hover { border-color: var(--border2); color: var(--text); }
+  .ent-tag.active { background: var(--surface2); border-color: var(--c-ent); color: var(--c-ent); }
+
+  /* MODAL */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(8,8,12,0.93);
+    z-index: 200;
+    backdrop-filter: blur(6px);
+    align-items: flex-end;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 28px 18px 44px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: rise 0.28s cubic-bezier(0.34,1.4,0.64,1);
+  }
+  @keyframes rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle {
+    width: 40px; height: 4px; border-radius: 99px;
+    background: var(--border2);
+    margin: 0 auto 22px;
+  }
+  .modal-title {
+    font-family: var(--font-display); font-size: 20px; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .modal-sub { font-size: 10px; color: var(--muted); margin-bottom: 24px; letter-spacing: 0.5px; }
+  .modal-field { margin-bottom: 16px; }
+  .field-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .field-input, .field-select {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.18s;
+  }
+  .field-input:focus, .field-select:focus { border-color: var(--border2); }
+  .field-select option { background: var(--surface2); }
+  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-save {
+    width: 100%;
+    padding: 13px;
+    background: var(--text);
+    border: none;
+    border-radius: 10px;
+    color: var(--bg);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.18s;
+    margin-top: 8px;
+  }
+  .modal-save:hover { opacity: 0.85; }
+  .modal-cancel {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.18s;
+  }
+  .modal-cancel:hover { color: var(--text); border-color: var(--border2); }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 36px 0; }
+
+  /* TIMER */
+  .timer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 20px 22px;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .t-sublabel { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+  .t-num {
+    font-family: var(--font-display);
+    font-size: 54px; font-weight: 800; letter-spacing: -3px;
+    margin-bottom: 18px; transition: color 0.3s;
+  }
+  .t-num.idle    { color: var(--text); }
+  .t-num.running { color: var(--c-lang); }
+  .t-num.done    { color: var(--c-islam); }
+  .prog-track { height: 2px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+  .prog-fill { height: 100%; width: 0%; background: var(--c-lang); border-radius: 99px; transition: width 1s linear; }
+  .presets { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .preset {
+    padding: 5px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted2);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .preset:hover, .preset.active { border-color: var(--border2); color: var(--text); }
+  .t-controls { display: flex; gap: 10px; justify-content: center; }
+  .t-btn { padding: 10px 28px; border-radius: 9px; font-family: var(--font-ui); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: opacity 0.18s; border: 1px solid var(--border); }
+  .t-btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .t-btn.secondary { background: transparent; color: var(--muted); }
+  .t-btn:hover { opacity: 0.8; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--surface3); border: 1px solid var(--border2);
+    border-radius: 99px; padding: 10px 20px;
+    font-size: 11px; color: var(--text);
+    transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1);
+    z-index: 300; white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">// free time optimizer</div>
+  <h1>USE YOUR<br>TIME WELL
+    <span>Tell me your situation.<br>I'll tell you what to do.</span>
+  </h1>
+</header>
+
+<!-- STEP 1: CONTEXT -->
+<div class="label">01 - WHERE ARE YOU?</div>
+<div class="context-scroll">
+  <button class="ctx-btn" data-ctx="home">Home</button>
+  <button class="ctx-btn" data-ctx="work">Work</button>
+  <button class="ctx-btn" data-ctx="commute">Commuting</button>
+  <button class="ctx-btn" data-ctx="outside">Outside</button>
+  <button class="ctx-btn" data-ctx="cafe">Cafe</button>
+  <button class="ctx-btn" data-ctx="travel">Traveling</button>
+</div>
+
+<!-- STEP 2: TIME -->
+<div class="label" style="margin-top:18px">02 - HOW MUCH TIME?</div>
+<div class="time-scroll">
+  <button class="time-btn" data-mins="5">5 min</button>
+  <button class="time-btn" data-mins="15">15 min</button>
+  <button class="time-btn" data-mins="30">30 min</button>
+  <button class="time-btn" data-mins="60">1 hour</button>
+  <button class="time-btn" data-mins="120">2 hours</button>
+  <button class="time-btn" data-mins="999">Open-ended</button>
+</div>
+
+<!-- STEP 3: ENERGY -->
+<div class="label">03 - ENERGY LEVEL?</div>
+<div class="energy-row">
+  <button class="e-btn" data-energy="high">
+    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    High
+  </button>
+  <button class="e-btn" data-energy="medium">
+    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    Medium
+  </button>
+  <button class="e-btn" data-energy="low">
+    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    Low
+  </button>
+  <button class="e-btn" data-energy="dead">
+    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    Dead
+  </button>
+</div>
+
+<!-- SUGGESTION OUTPUT -->
+<div id="suggestion-output">
+  <div class="suggestion-card" style="min-height:120px">
+    <div class="accent-line" style="background: var(--muted)"></div>
+    <div class="empty-state">
+      <div class="big">?</div>
+      Select your context, time & energy above
+    </div>
+  </div>
+</div>
+<button class="shuffle-btn" id="shuffleBtn" onclick="shuffle()">Give me another suggestion</button>
+
+<div class="divider"></div>
+
+<!-- RESOURCE MANAGER -->
+<div class="label">MY RESOURCES</div>
+<div class="section-tabs" id="sectionTabs">
+  <button class="tab-btn active" data-tab="islam">Islam</button>
+  <button class="tab-btn" data-tab="swe">SWE</button>
+  <button class="tab-btn" data-tab="arabic">Arabic</button>
+  <button class="tab-btn" data-tab="english">English</button>
+  <button class="tab-btn" data-tab="ent">Entertainment</button>
+</div>
+
+<!-- ISLAM -->
+<div class="res-section active" id="section-islam">
+  <div class="res-list" id="list-islam"></div>
+  <button class="add-res-btn" onclick="openAddModal('islam')">+ Add Islamic Resource</button>
+</div>
+
+<!-- SWE -->
+<div class="res-section" id="section-swe">
+  <div class="res-list" id="list-swe"></div>
+  <button class="add-res-btn" onclick="openAddModal('swe')">+ Add SWE Resource</button>
+</div>
+
+<!-- ARABIC -->
+<div class="res-section" id="section-arabic">
+  <div class="res-list" id="list-arabic"></div>
+  <button class="add-res-btn" onclick="openAddModal('arabic')">+ Add Arabic Resource</button>
+</div>
+
+<!-- ENGLISH -->
+<div class="res-section" id="section-english">
+  <div class="res-list" id="list-english"></div>
+  <button class="add-res-btn" onclick="openAddModal('english')">+ Add English Resource</button>
+</div>
+
+<!-- ENTERTAINMENT -->
+<div class="res-section" id="section-ent">
+  <div class="ent-tags" id="entTags">
+    <button class="ent-tag active" data-etag="all">All</button>
+    <button class="ent-tag" data-etag="podcast">Podcast</button>
+    <button class="ent-tag" data-etag="video">Video</button>
+    <button class="ent-tag" data-etag="game">Game</button>
+    <button class="ent-tag" data-etag="reading">Reading</button>
+    <button class="ent-tag" data-etag="music">Music</button>
+    <button class="ent-tag" data-etag="show">Show / Film</button>
+  </div>
+  <div class="res-list" id="list-ent"></div>
+  <button class="add-res-btn" onclick="openAddModal('ent')">+ Add Entertainment</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- TIMER -->
+<div class="label">FOCUS TIMER</div>
+<div class="timer-card">
+  <div class="t-sublabel">Session Timer</div>
+  <div class="t-num idle" id="timerDisplay">25:00</div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <div class="presets">
+    <button class="preset active" data-mins="5" onclick="setPreset(this,5)">5 min</button>
+    <button class="preset" data-mins="15" onclick="setPreset(this,15)">15 min</button>
+    <button class="preset" data-mins="25" onclick="setPreset(this,25)">25 min</button>
+    <button class="preset" data-mins="45" onclick="setPreset(this,45)">45 min</button>
+  </div>
+  <div class="t-controls">
+    <button class="t-btn primary" id="startBtn" onclick="toggleTimer()">Start</button>
+    <button class="t-btn secondary" onclick="resetTimer()">Reset</button>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="overlay" id="addOverlay" onclick="overlayClose(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Add Resource</div>
+    <div class="modal-sub" id="modalSub">This will show up in your smart suggestions</div>
+    <div class="modal-field">
+      <div class="field-label">Name / Title</div>
+      <input class="field-input" id="resName" type="text" placeholder="e.g. Quran Tafsir Series...">
+    </div>
+    <div class="modal-field">
+      <div class="field-label">URL (optional)</div>
+      <input class="field-input" id="resUrl" type="url" placeholder="https://...">
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <div class="field-label">Energy needed</div>
+        <select class="field-select" id="resEnergy">
+          <option value="any">Any</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+          <option value="dead">Dead tired</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <div class="field-label">Min. time (min)</div>
+        <input class="field-input" id="resTime" type="number" placeholder="e.g. 15" min="1">
+      </div>
+    </div>
+    <div class="modal-field">
+      <div class="field-label">Works when you're at</div>
+      <select class="field-select" id="resCtx">
+        <option value="any">Anywhere</option>
+        <option value="home">Home</option>
+        <option value="work">Work</option>
+        <option value="commute">Commuting</option>
+        <option value="outside">Outside</option>
+        <option value="cafe">Cafe</option>
+        <option value="travel">Traveling</option>
+      </select>
+    </div>
+    <!-- Ent-specific field -->
+    <div class="modal-field" id="entTypeField" style="display:none">
+      <div class="field-label">Entertainment Type</div>
+      <select class="field-select" id="resEntType">
+        <option value="podcast">Podcast</option>
+        <option value="video">Video</option>
+        <option value="game">Game</option>
+        <option value="reading">Reading</option>
+        <option value="music">Music</option>
+        <option value="show">Show / Film</option>
+      </select>
+    </div>
+    <!-- English level field -->
+    <div class="modal-field" id="engLevelField" style="display:none">
+      <div class="field-label">Your Level</div>
+      <select class="field-select" id="resEngLevel">
+        <option value="b1">B1 - Intermediate</option>
+        <option value="b2">B2 - Upper Intermediate</option>
+        <option value="both">Both / Any</option>
+      </select>
+    </div>
+    <button class="modal-save" onclick="saveResource()">Save Resource</button>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let state = {
+  ctx: null,
+  mins: null,
+  energy: null,
+  currentSuggestions: [],
+  currentIdx: 0,
+  activeSection: 'islam',
+  activeEntTag: 'all',
+  resources: {},
+  timer: { total: 25 * 60, remaining: 25 * 60, running: false, interval: null },
+  addingFor: null,
+};
+
+const STORAGE_KEY = 'fto_state_v3';
+
+const CATEGORY_META = {
+  islam: { color: 'var(--c-islam)', short: 'IS', label: 'Islam' },
+  swe: { color: 'var(--c-swe)', short: 'SE', label: 'SWE' },
+  arabic: { color: 'var(--c-lang)', short: 'AR', label: 'Arabic' },
+  english: { color: 'var(--c-eng)', short: 'EN', label: 'English' },
+  ent: { color: 'var(--c-ent)', short: 'ET', label: 'Entertainment' },
+};
+
+const defaultResources = {
+  islam: [
+    { id: 'd1', name: 'Quran.com', url: 'https://quran.com', energy: 'any', ctx: 'any', time: 5 },
+    { id: 'd2', name: 'Islamic Reminder - Bilal Assad (YouTube)', url: 'https://www.youtube.com/@BilalAssad', energy: 'low', ctx: 'any', time: 10 },
+    { id: 'd3', name: 'Seerah Podcast - Omar Suleiman', url: 'https://www.youtube.com/@YaqeenInstitute', energy: 'medium', ctx: 'commute', time: 20 },
+  ],
+  swe: [
+    { id: 'd4', name: 'LeetCode', url: 'https://leetcode.com', energy: 'high', ctx: 'any', time: 30 },
+    { id: 'd5', name: 'The Odin Project', url: 'https://www.theodinproject.com', energy: 'high', ctx: 'home', time: 60 },
+    { id: 'd6', name: 'CS50 Lecture (YouTube)', url: 'https://www.youtube.com/cs50', energy: 'medium', ctx: 'any', time: 20 },
+  ],
+  arabic: [
+    { id: 'd7', name: 'Duolingo Arabic', url: 'https://www.duolingo.com', energy: 'low', ctx: 'any', time: 5 },
+    { id: 'd8', name: 'Arabic with Sam (YouTube)', url: 'https://www.youtube.com/@arabicwithsam', energy: 'medium', ctx: 'any', time: 15 },
+    { id: 'd9', name: 'Lane\'s Lexicon (Arabic Dict.)', url: 'https://arabiclexicon.hawramani.com', energy: 'high', ctx: 'home', time: 20 },
+  ],
+  english: [
+    { id: 'd10', name: 'BBC Learning English (B1)', url: 'https://www.bbc.co.uk/learningenglish', energy: 'medium', ctx: 'any', time: 10, level: 'b1' },
+    { id: 'd11', name: 'TED Talks (B2)', url: 'https://www.ted.com/talks', energy: 'medium', ctx: 'any', time: 15, level: 'b2' },
+    { id: 'd12', name: 'British Council - Learn English', url: 'https://learnenglish.britishcouncil.org', energy: 'medium', ctx: 'any', time: 15, level: 'both' },
+    { id: 'd13', name: 'Anki - Vocab Flashcards', url: 'https://apps.ankiweb.net', energy: 'low', ctx: 'any', time: 5, level: 'both' },
+  ],
+  ent: [
+    { id: 'd14', name: 'Lex Fridman Podcast', url: 'https://lexfridman.com/podcast', energy: 'low', ctx: 'commute', time: 30, entType: 'podcast' },
+    { id: 'd15', name: 'Kurzgesagt (YouTube)', url: 'https://www.youtube.com/@kurzgesagt', energy: 'low', ctx: 'any', time: 10, entType: 'video' },
+    { id: 'd16', name: 'Chess.com', url: 'https://www.chess.com', energy: 'medium', ctx: 'any', time: 10, entType: 'game' },
+  ],
+};
+
+function getDefaultSnapshot() {
+  return {
+    ctx: null,
+    mins: null,
+    energy: null,
+    activeSection: 'islam',
+    activeEntTag: 'all',
+    resources: JSON.parse(JSON.stringify(defaultResources)),
+    timer: {
+      total: 25 * 60,
+      remaining: 25 * 60,
+      running: false,
+    },
+  };
+}
+
+function loadSavedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return getDefaultSnapshot();
+    const saved = JSON.parse(raw);
+    const fallback = getDefaultSnapshot();
+    return {
+      ...fallback,
+      ...saved,
+      resources: saved.resources && typeof saved.resources === 'object' ? saved.resources : fallback.resources,
+      timer: {
+        ...fallback.timer,
+        ...(saved.timer || {}),
+        running: false,
+      },
+    };
+  } catch (error) {
+    return getDefaultSnapshot();
+  }
+}
+
+function save() {
+  const snapshot = {
+    ctx: state.ctx,
+    mins: state.mins,
+    energy: state.energy,
+    activeSection: state.activeSection,
+    activeEntTag: state.activeEntTag,
+    resources: state.resources,
+    timer: {
+      total: state.timer.total,
+      remaining: state.timer.remaining,
+      running: false,
+    },
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+}
+
+function getCtxLabel(ctx) {
+  const labels = {
+    home: 'Home',
+    work: 'Work',
+    commute: 'Commuting',
+    outside: 'Outside',
+    cafe: 'Cafe',
+    travel: 'Traveling',
+  };
+  return labels[ctx] || 'Anywhere';
+}
+
+function applySelection(selector, value, attrName) {
+  document.querySelectorAll(selector).forEach(el => {
+    el.classList.toggle('active', String(el.dataset[attrName]) === String(value));
+  });
+}
+
+function setActiveSection(tab, shouldSave = true) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+  document.querySelectorAll('.res-section').forEach(section => section.classList.remove('active'));
+  const section = document.getElementById('section-' + tab);
+  if (!section) return;
+  section.classList.add('active');
+  state.activeSection = tab;
+  if (shouldSave) save();
+}
+
+function setActiveEntTag(tag, shouldSave = true) {
+  document.querySelectorAll('.ent-tag').forEach(btn => btn.classList.toggle('active', btn.dataset.etag === tag));
+  state.activeEntTag = tag;
+  renderList('ent');
+  if (shouldSave) save();
+}
+
+function init() {
+  const saved = loadSavedState();
+  state.ctx = saved.ctx;
+  state.mins = saved.mins;
+  state.energy = saved.energy;
+  state.activeSection = saved.activeSection;
+  state.activeEntTag = saved.activeEntTag;
+  state.resources = saved.resources;
+  state.timer.total = saved.timer.total;
+  state.timer.remaining = saved.timer.remaining;
+  state.timer.running = false;
+
+  applySelection('.ctx-btn', state.ctx, 'ctx');
+  applySelection('.time-btn', state.mins, 'mins');
+  applySelection('.e-btn', state.energy, 'energy');
+  applySelection('.preset', Math.round(state.timer.total / 60), 'mins');
+  setActiveSection(state.activeSection, false);
+  setActiveEntTag(state.activeEntTag, false);
+  updateTimerDisplay();
+  updateTimerProgress();
+  renderAllLists();
+  regen();
+}
+
+document.querySelectorAll('.ctx-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ctx-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.ctx = btn.dataset.ctx;
+    regen();
+    save();
+  });
+});
+
+document.querySelectorAll('.time-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mins = parseInt(btn.dataset.mins, 10);
+    regen();
+    save();
+  });
+});
+
+document.querySelectorAll('.e-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.e-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.energy = btn.dataset.energy;
+    regen();
+    save();
+  });
+});
+
+function energyScore(resEnergy, userEnergy) {
+  const map = { high: 3, medium: 2, low: 1, dead: 0 };
+  if (resEnergy === 'any') return true;
+  const userE = map[userEnergy] ?? 2;
+  const resE = map[resEnergy] ?? 0;
+  return resE <= userE;
+}
+
+function ctxMatch(resCtx, userCtx) {
+  return resCtx === 'any' || resCtx === userCtx;
+}
+
+function timeMatch(resTime, userMins) {
+  if (!userMins) return true;
+  return resTime <= userMins;
+}
+
+function getCandidates() {
+  const allItems = [];
+  Object.entries(state.resources).forEach(([cat, items]) => {
+    items.forEach(item => {
+      allItems.push({ ...item, _cat: cat });
+    });
+  });
+  return allItems.filter(item => {
+    const energyOk = !state.energy || energyScore(item.energy, state.energy);
+    const ctxOk = !state.ctx || ctxMatch(item.ctx, state.ctx);
+    const timeOk = !state.mins || timeMatch(item.time || 0, state.mins);
+    return energyOk && ctxOk && timeOk;
+  });
+}
+
+function regen() {
+  state.currentSuggestions = shuffleArray(getCandidates());
+  state.currentIdx = 0;
+  renderSuggestion();
+}
+
+function shuffle() {
+  if (!state.currentSuggestions.length) return;
+  state.currentIdx = (state.currentIdx + 1) % state.currentSuggestions.length;
+  renderSuggestion();
+}
+
+function shuffleArray(items) {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
+function renderSuggestion() {
+  const out = document.getElementById('suggestion-output');
+  if (!state.ctx && !state.energy && !state.mins) {
+    out.innerHTML = '<div class="suggestion-card" style="min-height:120px"><div class="accent-line" style="background:var(--muted)"></div><div class="empty-state"><div class="big">?</div>Select your context, time, and energy above</div></div>';
+    return;
+  }
+
+  if (!state.currentSuggestions.length) {
+    out.innerHTML = '<div class="suggestion-card" style="min-height:120px"><div class="accent-line" style="background:var(--muted)"></div><div class="empty-state"><div class="big">0</div>No resources match right now. Add some below.</div></div>';
+    return;
+  }
+
+  const resource = state.currentSuggestions[state.currentIdx];
+  const meta = CATEGORY_META[resource._cat] || { color: 'var(--c-islam)', short: 'IT', label: resource._cat };
+  const contextLabel = state.ctx ? getCtxLabel(state.ctx) : '';
+  const timeLabel = state.mins ? (state.mins >= 999 ? 'Open-ended' : state.mins + ' min') : '';
+  const badge = [contextLabel, timeLabel].filter(Boolean).join(' | ');
+  const levelBadge = resource.level ? ' | <span style="color:var(--c-eng)">' + resource.level.toUpperCase() + '</span>' : '';
+
+  const resourceHtml = resource.url
+    ? '<a class="s-resource" href="' + resource.url + '" target="_blank" rel="noopener" style="--accent:' + meta.color + '"><div class="s-res-icon">' + meta.short + '</div><div class="s-res-info"><div class="s-res-name">' + resource.name + '</div><div class="s-res-sub">Tap to open</div></div><div class="s-res-arrow">Open</div></a>'
+    : '<div class="s-resource"><div class="s-res-icon">' + meta.short + '</div><div class="s-res-info"><div class="s-res-name">' + resource.name + '</div><div class="s-res-sub">No link - saved from your notes</div></div></div>';
+
+  out.innerHTML = '<div class="suggestion-card" style="--accent:' + meta.color + '"><div class="accent-line"></div><div class="s-tag">' + meta.label + levelBadge + '</div>' + (badge ? '<div class="s-context-badge">' + badge + '</div>' : '') + '<div class="s-title">' + resource.name + '</div><div class="s-desc">' + getSuggestionDesc(state.energy, state.ctx) + '</div><div class="s-resources">' + resourceHtml + '</div>' + (resource.time ? '<div class="s-duration">~' + resource.time + ' min recommended</div>' : '') + '</div>';
+}
+
+function getSuggestionDesc(energy, ctx) {
+  const energyPhrases = {
+    high: 'You have good energy. Make it count.',
+    medium: 'Steady energy. Good for focused reading or practice.',
+    low: 'Low energy. Light content works well right now.',
+    dead: 'You are tired. Passive listening or quick review is ideal.',
+  };
+  const ctxPhrases = {
+    commute: 'Perfect for commuting. Audio works especially well here.',
+    work: 'A quick break activity you can do without switching contexts too hard.',
+    outside: 'Works well on mobile. No desk needed.',
+    cafe: 'Great cafe activity. Settle in and dive in.',
+    home: 'Best done at home with full focus.',
+    travel: 'Light and portable. Good for long journeys.',
+  };
+  return [energyPhrases[energy], ctxPhrases[ctx]].filter(Boolean).join(' ') || 'A great use of your free time.';
+}
+
+document.getElementById('sectionTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  setActiveSection(btn.dataset.tab);
+});
+
+document.getElementById('entTags').addEventListener('click', e => {
+  const btn = e.target.closest('.ent-tag');
+  if (!btn) return;
+  setActiveEntTag(btn.dataset.etag);
+});
+
+function renderAllLists() {
+  ['islam', 'swe', 'arabic', 'english', 'ent'].forEach(renderList);
+}
+
+function renderList(cat) {
+  const list = document.getElementById('list-' + cat);
+  const items = state.resources[cat] || [];
+
+  let filtered = items;
+  if (cat === 'ent' && state.activeEntTag !== 'all') {
+    filtered = items.filter(item => item.entType === state.activeEntTag);
+  }
+
+  if (!filtered.length) {
+    list.innerHTML = '<div style="text-align:center; padding:20px 0; color:var(--muted); font-size:11px; letter-spacing:1px;">No resources yet - add one below</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(item => {
+    const meta = CATEGORY_META[cat] || { color: 'var(--c-islam)' };
+    const details = [];
+    if (item.time) details.push(item.time + ' min');
+    if (item.energy && item.energy !== 'any') details.push(item.energy);
+    if (item.ctx && item.ctx !== 'any') details.push(getCtxLabel(item.ctx));
+    if (item.level) details.push(item.level.toUpperCase());
+    if (item.entType) details.push(item.entType);
+
+    const openBtn = item.url
+      ? '<a class="res-open-btn" href="' + item.url + '" target="_blank" rel="noopener">Open</a>'
+      : '<span class="res-open-btn" style="opacity:0.3;cursor:default">No link</span>';
+
+    return '<div class="res-item" data-id="' + item.id + '" data-cat="' + cat + '"><div class="res-item-dot" style="background:' + meta.color + '"></div><div class="res-item-info"><div class="res-item-name">' + item.name + '</div><div class="res-item-meta">' + (details.join(' | ') || 'any') + '</div></div><div class="res-item-actions">' + openBtn + '<button class="res-del-btn" onclick="deleteResource(\'' + cat + '\',\'' + item.id + '\')">X</button></div></div>';
+  }).join('');
+}
+
+function deleteResource(cat, id) {
+  state.resources[cat] = (state.resources[cat] || []).filter(item => item.id !== id);
+  save();
+  renderList(cat);
+  regen();
+  showToast('Resource removed');
+}
+
+function openAddModal(cat) {
+  state.addingFor = cat;
+  document.getElementById('modalTitle').textContent = 'Add ' + (CATEGORY_META[cat]?.label || cat) + ' Resource';
+  document.getElementById('modalSub').textContent = 'Smart suggestions will use this based on your energy and location';
+  document.getElementById('resName').value = '';
+  document.getElementById('resUrl').value = '';
+  document.getElementById('resEnergy').value = 'any';
+  document.getElementById('resTime').value = '';
+  document.getElementById('resCtx').value = 'any';
+  document.getElementById('entTypeField').style.display = cat === 'ent' ? '' : 'none';
+  document.getElementById('engLevelField').style.display = cat === 'english' ? '' : 'none';
+  document.getElementById('addOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('addOverlay').classList.remove('open');
+}
+
+function overlayClose(e) {
+  if (e.target === document.getElementById('addOverlay')) closeModal();
+}
+
+function saveResource() {
+  const name = document.getElementById('resName').value.trim();
+  if (!name) {
+    showToast('Please enter a name');
+    return;
+  }
+
+  const cat = state.addingFor;
+  const resource = {
+    id: 'r' + Date.now(),
+    name,
+    url: document.getElementById('resUrl').value.trim() || null,
+    energy: document.getElementById('resEnergy').value,
+    time: parseInt(document.getElementById('resTime').value, 10) || null,
+    ctx: document.getElementById('resCtx').value,
+  };
+
+  if (cat === 'ent') resource.entType = document.getElementById('resEntType').value;
+  if (cat === 'english') resource.level = document.getElementById('resEngLevel').value;
+  if (!state.resources[cat]) state.resources[cat] = [];
+
+  state.resources[cat].unshift(resource);
+  save();
+  renderList(cat);
+  regen();
+  closeModal();
+  showToast('Resource added');
+}
+
+function updateTimerProgress() {
+  const elapsed = state.timer.total - state.timer.remaining;
+  const pct = state.timer.total > 0 ? (elapsed / state.timer.total) * 100 : 0;
+  document.getElementById('progFill').style.width = pct + '%';
+}
+
+function setPreset(el, mins) {
+  document.querySelectorAll('.preset').forEach(preset => preset.classList.remove('active'));
+  el.classList.add('active');
+  resetTimer(mins * 60);
+}
+
+function resetTimer(secs) {
+  clearInterval(state.timer.interval);
+  state.timer.running = false;
+  state.timer.total = secs ?? state.timer.total;
+  state.timer.remaining = state.timer.total;
+  document.getElementById('startBtn').textContent = 'Start';
+  document.getElementById('timerDisplay').className = 't-num idle';
+  updateTimerDisplay();
+  updateTimerProgress();
+  save();
+}
+
+function toggleTimer() {
+  if (state.timer.running) {
+    clearInterval(state.timer.interval);
+    state.timer.running = false;
+    document.getElementById('startBtn').textContent = 'Resume';
+    document.getElementById('timerDisplay').className = 't-num idle';
+    save();
+    return;
+  }
+
+  state.timer.running = true;
+  document.getElementById('startBtn').textContent = 'Pause';
+  document.getElementById('timerDisplay').className = 't-num running';
+  save();
+
+  state.timer.interval = setInterval(() => {
+    state.timer.remaining--;
+    updateTimerDisplay();
+    updateTimerProgress();
+    save();
+
+    if (state.timer.remaining <= 0) {
+      clearInterval(state.timer.interval);
+      state.timer.running = false;
+      state.timer.remaining = 0;
+      document.getElementById('startBtn').textContent = 'Start';
+      document.getElementById('timerDisplay').className = 't-num done';
+      updateTimerDisplay();
+      updateTimerProgress();
+      showToast('Session complete');
+      save();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const minutes = Math.floor(state.timer.remaining / 60).toString().padStart(2, '0');
+  const seconds = (state.timer.remaining % 60).toString().padStart(2, '0');
+  document.getElementById('timerDisplay').textContent = minutes + ':' + seconds;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+init();
+</script>
+</body>
+</html>
+
