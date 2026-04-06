@@ -464,6 +464,23 @@ h1 span {
 .ent-tag:hover { border-color: var(--border-light); color: var(--text); }
 .ent-tag.active { background: var(--surface2); border-color: var(--c-ent); color: var(--c-ent); }
 
+/* ---- LANG SECTION ---- */
+.lang-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+
+.lang-tag {
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.5px;
+}
+.lang-tag:hover { border-color: var(--border-light); color: var(--text); }
+.lang-tag.active { background: var(--surface2); border-color: var(--c-lang); color: var(--c-lang); }
+
 /* ---- MODAL ---- */
 .overlay {
   display: none;

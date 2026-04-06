@@ -10,6 +10,7 @@ let state = {
   currentIdx: 0,
   activeSection: 'islam',
   activeEntTag: 'all',
+  activeLangTag: 'all',
   activeLang: null,
   resources: {},
   timer: { total: 25 * 60, remaining: 25 * 60, running: false, interval: null },
@@ -177,7 +178,7 @@ function getFilteredLangResources(lang) {
 function getDefaultSnapshot() {
   return {
     ctx: null, mins: null, energy: null,
-    activeSection: 'islam', activeEntTag: 'all', activeLang: null,
+    activeSection: 'islam', activeEntTag: 'all', activeLangTag: 'all', activeLang: null,
     resources: JSON.parse(JSON.stringify(defaultResources)),
     timer: { total: 25 * 60, remaining: 25 * 60, running: false },
   };
@@ -204,6 +205,7 @@ function persistState() {
     ctx: state.ctx, mins: state.mins, energy: state.energy,
     activeSection: state.activeSection,
     activeEntTag: state.activeEntTag,
+    activeLangTag: state.activeLangTag,
     activeLang: state.activeLang,
     resources: state.resources,
     timer: { total: state.timer.total, remaining: state.timer.remaining, running: false },
@@ -240,6 +242,14 @@ function setActiveEntTag(tag, shouldSave = true) {
     btn.classList.toggle('active', btn.dataset.etag === tag));
   state.activeEntTag = tag;
   renderList('ent');
+  if (shouldSave) persistState();
+}
+
+function setActiveLangTag(tag, shouldSave = true) {
+  document.querySelectorAll('.lang-tag').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.ltag === tag));
+  state.activeLangTag = tag;
+  renderList('lang');
   if (shouldSave) persistState();
 }
 
@@ -454,7 +464,60 @@ function renderList(cat) {
   if (!listEl) return;
 
   if (cat === 'lang') {
-    renderLangSection();
+    // Map language tags to language IDs
+    const tagToId = { english: 'en', french: 'fr', italian: 'it', japanese: 'jp', arabic: 'ar', german: 'de' };
+    const activeId = state.activeLangTag === 'all' ? null : tagToId[state.activeLangTag];
+    
+    let languages = LANGUAGES;
+    if (activeId) {
+      languages = languages.filter(l => l.id === activeId);
+    }
+
+    if (!languages.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:11px;letter-spacing:1px">No languages available</div>';
+      return;
+    }
+
+    // Flatten all language resources into a single list
+    const allResources = [];
+    languages.forEach(lang => {
+      lang.resources.forEach(res => {
+        allResources.push({
+          ...res,
+          langId: lang.id,
+          langName: lang.name,
+          langColor: lang.color,
+        });
+      });
+    });
+
+    if (!allResources.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:11px;letter-spacing:1px">No resources yet — add one below</div>';
+      return;
+    }
+
+    listEl.innerHTML = allResources.map(item => {
+      const details = [];
+      if (item.time) details.push(item.time + ' min');
+      if (item.energy && item.energy !== 'any') details.push(item.energy);
+      if (item.ctx && item.ctx !== 'any') details.push(getCtxLabel(item.ctx));
+      if (item.level) details.push(item.level.toUpperCase());
+
+      const openBtn = item.url
+        ? `<a class="res-open-btn" href="${item.url}" target="_blank" rel="noopener">Open</a>`
+        : `<span class="res-open-btn" style="opacity:0.3;cursor:default">No link</span>`;
+
+      return `<div class="res-item" data-id="${item.name}" data-cat="lang">
+        <div class="res-item-dot" style="background:${item.langColor}"></div>
+        <div class="res-item-info">
+          <div class="res-item-name">${escHtml(item.name)}</div>
+          <div class="res-item-meta">${details.join(' | ') || 'any'}</div>
+        </div>
+        <div class="res-item-actions">
+          ${openBtn}
+        </div>
+      </div>`;
+    }).join('');
     return;
   }
 
@@ -621,6 +684,7 @@ function init() {
     ctx: saved.ctx, mins: saved.mins, energy: saved.energy,
     activeSection: saved.activeSection,
     activeEntTag:  saved.activeEntTag,
+    activeLangTag: saved.activeLangTag,
     activeLang:    saved.activeLang,
     resources:     saved.resources,
   });
@@ -635,6 +699,7 @@ function init() {
 
   setActiveSection(state.activeSection, false);
   setActiveEntTag(state.activeEntTag, false);
+  setActiveLangTag(state.activeLangTag, false);
   updateTimerDisplay();
   updateTimerProgress();
   renderAllLists();
@@ -672,6 +737,12 @@ function init() {
     const btn = e.target.closest('.ent-tag');
     if (!btn) return;
     setActiveEntTag(btn.dataset.etag);
+  });
+
+  document.getElementById('langTags')?.addEventListener('click', e => {
+    const btn = e.target.closest('.lang-tag');
+    if (!btn) return;
+    setActiveLangTag(btn.dataset.ltag);
   });
 }
 

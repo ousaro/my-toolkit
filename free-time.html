@@ -105,8 +105,16 @@
 
 <!-- LANGUAGES -->
 <div class="res-section" id="section-lang">
-  <!-- Smart suggestion + language grid rendered by JS -->
-  <div id="lang-section-content"></div>
+  <div class="lang-tags" id="langTags">
+    <button class="lang-tag active" data-ltag="all">All</button>
+    <button class="lang-tag" data-ltag="english">English</button>
+    <button class="lang-tag" data-ltag="french">French</button>
+    <button class="lang-tag" data-ltag="italian">Italian</button>
+    <button class="lang-tag" data-ltag="arabic">Arabic</button>
+    <button class="lang-tag" data-ltag="japanese">Japanese</button>
+  </div>
+  <div class="res-list" id="list-lang"></div>
+  <button class="add-res-btn" onclick="openAddModal('lang')">+ Add Language Resource</button>
 </div>
 
 <!-- ENTERTAINMENT -->
