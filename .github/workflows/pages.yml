@@ -35,6 +35,8 @@ jobs:
           cp index.html _site/index.html
           cp todo.html _site/todo.html
           cp free-time.html _site/free-time.html
+          cp -r css _site/css
+          cp -r js _site/js
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
