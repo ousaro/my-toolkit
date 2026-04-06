@@ -249,7 +249,6 @@
     <a class="site-nav-link" href="./index.html">Home</a>
     <a class="site-nav-link active" href="./todo.html">Todo</a>
     <a class="site-nav-link" href="./free-time.html">Free Time</a>
-    <a class="site-nav-link" href="./workout_plan.html">Workout</a>
   </div>
 </nav>
 
@@ -289,13 +288,13 @@
       <button class="reminders-add-btn" onclick="toggleReminderInput()" id="remindersAddBtn">+ Add</button>
     </div>
     <div class="reminders-track-wrap" id="remindersTrackWrap">
-      <div class="reminders-scroll-hint">›</div>
+      <div class="reminders-scroll-hint"></div>
       <div class="reminders-track" id="remindersTrack"></div>
     </div>
     <div class="reminder-add-inline" id="reminderAddInline">
       <input class="reminder-add-input" id="reminderInput" placeholder="Reminder text..." maxlength="120" autocomplete="off" onkeydown="handleReminderKey(event)">
       <button class="reminder-confirm-btn" onclick="addReminder()">Add</button>
-      <button class="reminder-cancel-btn" onclick="closeReminderInput()">✕</button>
+      <button class="reminder-cancel-btn" onclick="closeReminderInput()">x</button>
     </div>
   </div>
 
@@ -325,7 +324,7 @@
 
   <!-- SEARCH -->
   <div class="search-bar">
-    <span class="search-icon">⌕</span>
+    <span class="search-icon">[...]</span>
     <input class="search-input" id="searchInput" placeholder="Search tasks… ( / )" oninput="renderTasks()" autocomplete="off">
   </div>
 

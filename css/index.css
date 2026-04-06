@@ -95,7 +95,7 @@ body {
 /* Accent variants per card */
 .tool-card[data-tool="todo"]      { --card-accent: var(--accent); }
 .tool-card[data-tool="free-time"] { --card-accent: var(--c-ent); }
-.tool-card[data-tool="workout"]   { --card-accent: var(--c-swe); }
+
 
 .card-tag {
   font-family: var(--font-mono);
