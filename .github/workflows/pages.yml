@@ -29,10 +29,17 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare publish directory
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          cp todo.html _site/todo.html
+          cp free-time.html _site/free-time.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
