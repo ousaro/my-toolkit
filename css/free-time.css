@@ -460,6 +460,8 @@ h1 span {
   cursor: pointer;
   transition: all 0.18s;
   letter-spacing: 0.5px;
+  font-family: inherit;
+  font-weight: inherit;
 }
 .ent-tag:hover { border-color: var(--border-light); color: var(--text); }
 .ent-tag.active { background: var(--surface2); border-color: var(--c-ent); color: var(--c-ent); }
@@ -477,6 +479,8 @@ h1 span {
   cursor: pointer;
   transition: all 0.18s;
   letter-spacing: 0.5px;
+  font-family: inherit;
+  font-weight: inherit;
 }
 .lang-tag:hover { border-color: var(--border-light); color: var(--text); }
 .lang-tag.active { background: var(--surface2); border-color: var(--c-lang); color: var(--c-lang); }
