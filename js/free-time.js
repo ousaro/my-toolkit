@@ -19,6 +19,28 @@ let state = {
 
 const STORAGE_KEY = 'fto_state_v4';
 
+// ---- PASSWORD PROTECTION ----
+const PASSWORD = 'ousaro2026'; // Change this to your desired password
+
+function checkPassword() {
+  const input = document.getElementById('password-input').value;
+  if (input === PASSWORD) {
+    document.getElementById('password-overlay').style.display = 'none';
+  } else {
+    alert('Incorrect password');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('password-submit').addEventListener('click', checkPassword);
+  document.getElementById('password-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      checkPassword();
+    }
+  });
+  init(); // Initialize the page after DOM is ready
+});
+
 // ---- CATEGORY META ----
 const CATEGORY_META = {
   islam:  { color: 'var(--c-islam)',  short: 'IS', label: 'Islam' },
@@ -745,5 +767,3 @@ function init() {
     setActiveLangTag(btn.dataset.ltag);
   });
 }
-
-init();

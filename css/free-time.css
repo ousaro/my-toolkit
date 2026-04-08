@@ -634,3 +634,51 @@ h1 span {
 .t-btn.primary   { background: var(--text); color: var(--bg); border-color: var(--text); }
 .t-btn.secondary { background: transparent; color: var(--text-muted); }
 .t-btn:hover     { opacity: 0.8; }
+
+/* ---- PASSWORD OVERLAY ---- */
+.password-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.password-modal {
+  background: var(--bg);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.password-modal h2 {
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.password-modal input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  width: 200px;
+}
+
+.password-modal button {
+  padding: 10px 20px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.password-modal button:hover {
+  opacity: 0.8;
+}
