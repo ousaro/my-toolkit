@@ -9,14 +9,6 @@
 </head>
 <body>
 
-<div id="password-overlay" class="password-overlay">
-  <div class="password-modal">
-    <h2>Enter Password</h2>
-    <input type="password" id="password-input" placeholder="Password">
-    <button id="password-submit">Submit</button>
-  </div>
-</div>
-
 <nav class="site-nav">
   <a class="site-nav-logo" href="./index.html">toolkit<span>.</span></a>
   <div class="site-nav-links">
@@ -26,137 +18,108 @@
   </div>
 </nav>
 
-<header>
-  <div class="eyebrow">// free time optimizer</div>
-  <h1>USE YOUR<br>TIME WELL
-    <span>Tell me your situation.<br>I'll tell you what to do.</span>
-  </h1>
-</header>
+<div class="app">
+  <header>
+    <div class="hero-main">
+      <div class="eyebrow">Free Time</div>
+      <h1 class="hero-title">Match Your<br>Next Move</h1>
+      <p class="hero-copy">Choose your context, time, and energy, and the app will rank your saved resources to pick the strongest next thing to do.</p>
+    </div>
+    <div class="hero-side" aria-hidden="true">
+      <div class="hero-side-label">Mode</div>
+      <div class="hero-side-value">Smart Match</div>
+      <div class="hero-side-meta">Scores time, context, and energy to surface the best fit first.</div>
+    </div>
+  </header>
 
-<!-- STEP 1: CONTEXT -->
-<div class="label">01 — WHERE ARE YOU?</div>
-<div class="context-scroll">
-  <button class="ctx-btn" data-ctx="home">Home</button>
-  <button class="ctx-btn" data-ctx="work">Work</button>
-  <button class="ctx-btn" data-ctx="commute">Commuting</button>
-  <button class="ctx-btn" data-ctx="outside">Outside</button>
-  <button class="ctx-btn" data-ctx="cafe">Cafe</button>
-  <button class="ctx-btn" data-ctx="travel">Traveling</button>
-</div>
+  <!-- STEP 1: CONTEXT -->
+  <div class="label">01 — WHERE ARE YOU?</div>
+  <div class="context-scroll">
+    <button class="ctx-btn" data-ctx="home">Home</button>
+    <button class="ctx-btn" data-ctx="work">Work</button>
+    <button class="ctx-btn" data-ctx="commute">Commuting</button>
+    <button class="ctx-btn" data-ctx="outside">Outside</button>
+    <button class="ctx-btn" data-ctx="cafe">Cafe</button>
+    <button class="ctx-btn" data-ctx="travel">Traveling</button>
+  </div>
 
-<!-- STEP 2: TIME -->
-<div class="label" style="margin-top:18px">02 — HOW MUCH TIME?</div>
-<div class="time-scroll">
-  <button class="time-btn" data-mins="5">5 min</button>
-  <button class="time-btn" data-mins="15">15 min</button>
-  <button class="time-btn" data-mins="30">30 min</button>
-  <button class="time-btn" data-mins="60">1 hour</button>
-  <button class="time-btn" data-mins="120">2 hours</button>
-  <button class="time-btn" data-mins="999">Open-ended</button>
-</div>
+  <!-- STEP 2: TIME -->
+  <div class="label" style="margin-top:18px">02 — HOW MUCH TIME?</div>
+  <div class="time-scroll">
+    <button class="time-btn" data-mins="5">5 min</button>
+    <button class="time-btn" data-mins="15">15 min</button>
+    <button class="time-btn" data-mins="30">30 min</button>
+    <button class="time-btn" data-mins="60">1 hour</button>
+    <button class="time-btn" data-mins="120">2 hours</button>
+    <button class="time-btn" data-mins="999">Open-ended</button>
+  </div>
 
-<!-- STEP 3: ENERGY -->
-<div class="label">03 — ENERGY LEVEL?</div>
-<div class="energy-row">
-  <button class="e-btn" data-energy="high">
-    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-    High
-  </button>
-  <button class="e-btn" data-energy="medium">
-    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-    Medium
-  </button>
-  <button class="e-btn" data-energy="low">
-    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-    Low
-  </button>
-  <button class="e-btn" data-energy="dead">
-    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-    Dead
-  </button>
-</div>
+  <!-- STEP 3: ENERGY -->
+  <div class="label">03 — ENERGY LEVEL?</div>
+  <div class="energy-row">
+    <button class="e-btn" data-energy="high">
+      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      High
+    </button>
+    <button class="e-btn" data-energy="medium">
+      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      Medium
+    </button>
+    <button class="e-btn" data-energy="low">
+      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      Low
+    </button>
+    <button class="e-btn" data-energy="dead">
+      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+      Dead
+    </button>
+  </div>
 
-<!-- SUGGESTION OUTPUT -->
-<div id="suggestion-output">
-  <div class="suggestion-card" style="min-height:120px">
-    <div class="accent-line" style="background:var(--text-muted)"></div>
-    <div class="empty-state">
-      <div class="big">?</div>
-      Select your context, time &amp; energy above
+  <!-- SUGGESTION OUTPUT -->
+  <div id="suggestion-output">
+    <div class="suggestion-card" style="min-height:120px">
+      <div class="accent-line" style="background:var(--text-muted)"></div>
+      <div class="empty-state">
+        <div class="big">?</div>
+        Select your context, time &amp; energy above
+      </div>
     </div>
   </div>
-</div>
-<button class="shuffle-btn" id="shuffleBtn" onclick="shuffle()">↻ Give me another suggestion</button>
+  <button class="shuffle-btn" id="shuffleBtn" onclick="shuffle()">↻ Give me another suggestion</button>
 
-<div class="divider"></div>
+  <div class="divider"></div>
 
-<!-- RESOURCE MANAGER -->
-<div class="label">MY RESOURCES</div>
-<div class="section-tabs" id="sectionTabs">
-  <button class="tab-btn active" data-tab="islam">Islam</button>
-  <button class="tab-btn"       data-tab="swe">SWE</button>
-  <button class="tab-btn"       data-tab="lang">Languages</button>
-  <button class="tab-btn"       data-tab="ent">Entertainment</button>
-</div>
-
-<!-- ISLAM -->
-<div class="res-section active" id="section-islam">
-  <div class="res-list" id="list-islam"></div>
-  <button class="add-res-btn" onclick="openAddModal('islam')">+ Add Islamic Resource</button>
-</div>
-
-<!-- SWE -->
-<div class="res-section" id="section-swe">
-  <div class="res-list" id="list-swe"></div>
-  <button class="add-res-btn" onclick="openAddModal('swe')">+ Add SWE Resource</button>
-</div>
-
-<!-- LANGUAGES -->
-<div class="res-section" id="section-lang">
-  <div class="lang-tags" id="langTags">
-    <button class="lang-tag active" data-ltag="all">All</button>
-    <button class="lang-tag" data-ltag="english">English</button>
-    <button class="lang-tag" data-ltag="french">French</button>
-    <button class="lang-tag" data-ltag="italian">Italian</button>
-    <button class="lang-tag" data-ltag="arabic">Arabic</button>
-    <button class="lang-tag" data-ltag="japanese">Japanese</button>
+  <!-- RESOURCE MANAGER -->
+  <div class="label">MY RESOURCES</div>
+  <div class="section-tabs" id="sectionTabs">
+    <button class="tab-btn active" data-tab="islam">Islam</button>
+    <button class="tab-btn"       data-tab="swe">SWE</button>
+    <button class="tab-btn"       data-tab="lang">Languages</button>
+    <button class="tab-btn"       data-tab="ent">Entertainment</button>
   </div>
-  <div class="res-list" id="list-lang"></div>
-  <button class="add-res-btn" onclick="openAddModal('lang')">+ Add Language Resource</button>
-</div>
 
-<!-- ENTERTAINMENT -->
-<div class="res-section" id="section-ent">
-  <div class="ent-tags" id="entTags">
-    <button class="ent-tag active" data-etag="all">All</button>
-    <button class="ent-tag" data-etag="podcast">Podcast</button>
-    <button class="ent-tag" data-etag="video">Video</button>
-    <button class="ent-tag" data-etag="game">Game</button>
-    <button class="ent-tag" data-etag="reading">Reading</button>
-    <button class="ent-tag" data-etag="music">Music</button>
-    <button class="ent-tag" data-etag="show">Show / Film</button>
+  <!-- ISLAM -->
+  <div class="res-section active" id="section-islam">
+    <div class="res-list" id="list-islam"></div>
+    <button class="add-res-btn" onclick="openAddModal('islam')">+ Add Islamic Resource</button>
   </div>
-  <div class="res-list" id="list-ent"></div>
-  <button class="add-res-btn" onclick="openAddModal('ent')">+ Add Entertainment</button>
-</div>
 
-<div class="divider"></div>
-
-<!-- TIMER -->
-<div class="label">FOCUS TIMER</div>
-<div class="timer-card">
-  <div class="t-sublabel">Session Timer</div>
-  <div class="t-num idle" id="timerDisplay">25:00</div>
-  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
-  <div class="presets">
-    <button class="preset active" data-mins="5"  onclick="setPreset(this,5)">5 min</button>
-    <button class="preset"        data-mins="15" onclick="setPreset(this,15)">15 min</button>
-    <button class="preset"        data-mins="25" onclick="setPreset(this,25)">25 min</button>
-    <button class="preset"        data-mins="45" onclick="setPreset(this,45)">45 min</button>
+  <!-- SWE -->
+  <div class="res-section" id="section-swe">
+    <div class="res-list" id="list-swe"></div>
+    <button class="add-res-btn" onclick="openAddModal('swe')">+ Add SWE Resource</button>
   </div>
-  <div class="t-controls">
-    <button class="t-btn primary"   id="startBtn" onclick="toggleTimer()">Start</button>
-    <button class="t-btn secondary" onclick="resetTimer()">Reset</button>
+
+  <!-- LANGUAGES -->
+  <div class="res-section" id="section-lang">
+    <div class="res-list" id="list-lang"></div>
+    <button class="add-res-btn" onclick="openAddModal('lang')">+ Add Language Resource</button>
+  </div>
+
+  <!-- ENTERTAINMENT -->
+  <div class="res-section" id="section-ent">
+    <div class="res-list" id="list-ent"></div>
+    <button class="add-res-btn" onclick="openAddModal('ent')">+ Add Entertainment</button>
   </div>
 </div>
 
@@ -203,26 +166,9 @@
         <option value="travel">Traveling</option>
       </select>
     </div>
-    <!-- Entertainment-specific -->
-    <div class="modal-field" id="entTypeField" style="display:none">
-      <div class="field-label">Entertainment Type</div>
-      <select class="field-select" id="resEntType">
-        <option value="podcast">Podcast</option>
-        <option value="video">Video</option>
-        <option value="game">Game</option>
-        <option value="reading">Reading</option>
-        <option value="music">Music</option>
-        <option value="show">Show / Film</option>
-      </select>
-    </div>
-    <!-- English level (legacy) -->
-    <div class="modal-field" id="engLevelField" style="display:none">
-      <div class="field-label">Your Level</div>
-      <select class="field-select" id="resEngLevel">
-        <option value="b1">B1 – Intermediate</option>
-        <option value="b2">B2 – Upper Intermediate</option>
-        <option value="both">Both / Any</option>
-      </select>
+    <div class="modal-field" id="subdivisionField" style="display:none">
+      <div class="field-label" id="subdivisionLabel">Subdivision</div>
+      <input class="field-input" id="resSubdivision" type="text" placeholder="e.g. French, Podcast, Anime, Grammar...">
     </div>
 
     <button class="modal-save"   onclick="saveResource()">Save Resource</button>
