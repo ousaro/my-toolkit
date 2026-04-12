@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Utility — Unit Converter</title>
+<link rel="stylesheet" href="./css/shared.css">
+<link rel="stylesheet" href="./css/converter.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="site-nav-logo" href="./index.html">toolkit<span>.</span></a>
+  <div class="site-nav-links">
+    <a class="site-nav-link" href="./index.html">Home</a>
+    <a class="site-nav-link" href="./todo.html">Todo</a>
+    <a class="site-nav-link" href="./free-time.html">Free Time</a>
+    <a class="site-nav-link active" href="./converter.html">Converter</a>
+  </div>
+</nav>
+
+<div class="app">
+  <header>
+    <div class="eyebrow">Utility</div>
+    <h1 class="app-title">Unit Converter</h1>
+    <p class="hero-copy">Convert between units for length, weight, temperature, speed, volume, area, and time. Real-time conversions with precision control.</p>
+  </header>
+
+  <div class="converter-container">
+    <div class="converter-controls">
+      <div class="control-group">
+        <label class="label">Category</label>
+        <select id="category-select" class="select-input">
+          <option value="length">Length</option>
+          <option value="weight">Weight / Mass</option>
+          <option value="temperature">Temperature</option>
+          <option value="speed">Speed</option>
+          <option value="volume">Volume</option>
+          <option value="area">Area</option>
+          <option value="time">Time</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label class="label">Precision</label>
+        <select id="precision-select" class="select-input">
+          <option value="2">2 decimals</option>
+          <option value="3">3 decimals</option>
+          <option value="4" selected>4 decimals</option>
+          <option value="5">5 decimals</option>
+          <option value="6">6 decimals</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="conversion-section">
+      <div class="input-group">
+        <label class="label">From</label>
+        <div class="input-row">
+          <input type="number" id="from-value" class="number-input" placeholder="Enter value" value="1">
+          <select id="from-unit" class="unit-select"></select>
+        </div>
+      </div>
+
+      <div class="swap-container">
+        <button id="swap-btn" class="swap-btn">⇄</button>
+      </div>
+
+      <div class="input-group">
+        <label class="label">To</label>
+        <div class="input-row">
+          <input type="number" id="to-value" class="number-input" readonly>
+          <select id="to-unit" class="unit-select"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./js/converter.js"></script>
+</body>
+</html>

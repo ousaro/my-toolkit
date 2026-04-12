@@ -1,0 +1,201 @@
+/* ============================================================
+   CONVERTER.CSS — Styles specific to converter.html
+   ============================================================ */
+
+body {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
+  min-height: 100dvh;
+}
+
+/* ---- HEADER ---- */
+header {
+  padding: 28px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 5.5vw, 2.6rem);
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.hero-copy {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  max-width: 480px;
+}
+
+/* ---- CONVERTER CONTAINER ---- */
+.converter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 40px;
+}
+
+.converter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.select-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  padding: 13px 15px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.select-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  background: var(--surface2);
+}
+
+.select-input option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* ---- CONVERSION SECTION ---- */
+.conversion-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.swap-container {
+  display: flex;
+  justify-content: center;
+}
+
+.number-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  padding: 13px 15px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: var(--transition);
+}
+
+.number-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  background: var(--surface3);
+}
+
+.number-input[readonly] {
+  background: var(--surface);
+  cursor: not-allowed;
+}
+
+.unit-select {
+  width: 120px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  padding: 13px 15px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.unit-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  background: var(--surface3);
+}
+
+.unit-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.swap-btn {
+  background: var(--accent);
+  border: none;
+  color: #0e0e0f;
+  font-size: 1.2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.swap-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.swap-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 480px) {
+  .input-row {
+    flex-direction: column;
+  }
+
+  .unit-select {
+    width: 100%;
+  }
+}
