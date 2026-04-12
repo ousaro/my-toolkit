@@ -23,108 +23,42 @@
   <header>
     <div class="hero-main">
       <div class="eyebrow">Free Time</div>
-      <h1 class="hero-title">Match Your<br>Next Move</h1>
-      <p class="hero-copy">Choose your context, time, and energy, and the app will rank your saved resources to pick the strongest next thing to do.</p>
-    </div>
-    <div class="hero-side" aria-hidden="true">
-      <div class="hero-side-label">Mode</div>
-      <div class="hero-side-value">Smart Match</div>
-      <div class="hero-side-meta">Scores time, context, and energy to surface the best fit first.</div>
+      <h1 class="hero-title">My Resources</h1>
+      <p class="hero-copy">Manage and filter your favorite resources for learning, entertainment, and personal growth.</p>
     </div>
   </header>
 
-  <!-- STEP 1: CONTEXT -->
-  <div class="label">01 — WHERE ARE YOU?</div>
-  <div class="context-scroll">
-    <button class="ctx-btn" data-ctx="home">Home</button>
-    <button class="ctx-btn" data-ctx="work">Work</button>
-    <button class="ctx-btn" data-ctx="commute">Commuting</button>
-    <button class="ctx-btn" data-ctx="outside">Outside</button>
-    <button class="ctx-btn" data-ctx="cafe">Cafe</button>
-    <button class="ctx-btn" data-ctx="travel">Traveling</button>
-  </div>
-
-  <!-- STEP 2: TIME -->
-  <div class="label" style="margin-top:18px">02 — HOW MUCH TIME?</div>
-  <div class="time-scroll">
-    <button class="time-btn" data-mins="5">5 min</button>
-    <button class="time-btn" data-mins="15">15 min</button>
-    <button class="time-btn" data-mins="30">30 min</button>
-    <button class="time-btn" data-mins="60">1 hour</button>
-    <button class="time-btn" data-mins="120">2 hours</button>
-    <button class="time-btn" data-mins="999">Open-ended</button>
-  </div>
-
-  <!-- STEP 3: ENERGY -->
-  <div class="label">03 — ENERGY LEVEL?</div>
-  <div class="energy-row">
-    <button class="e-btn" data-energy="high">
-      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-      High
-    </button>
-    <button class="e-btn" data-energy="medium">
-      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-      Medium
-    </button>
-    <button class="e-btn" data-energy="low">
-      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-      Low
-    </button>
-    <button class="e-btn" data-energy="dead">
-      <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-      Dead
-    </button>
-  </div>
-
-  <!-- SUGGESTION OUTPUT -->
-  <div id="suggestion-output">
-    <div class="suggestion-card" style="min-height:120px">
-      <div class="accent-line" style="background:var(--text-muted)"></div>
-      <div class="empty-state">
-        <div class="big">?</div>
-        Select your context, time &amp; energy above
-      </div>
+  <!-- SEARCH AND FILTER -->
+  <div class="search-section">
+    <div class="search-input-wrapper">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search resources...">
     </div>
   </div>
-  <button class="shuffle-btn" id="shuffleBtn" onclick="shuffle()">↻ Give me another suggestion</button>
-
-  <div class="divider"></div>
 
   <!-- RESOURCE MANAGER -->
   <div class="label">MY RESOURCES</div>
   <div class="section-tabs" id="sectionTabs">
-    <button class="tab-btn active" data-tab="islam">Islam</button>
-    <button class="tab-btn"       data-tab="swe">SWE</button>
-    <button class="tab-btn"       data-tab="lang">Languages</button>
-    <button class="tab-btn"       data-tab="ent">Entertainment</button>
+    <button class="add-category-btn" onclick="openAddCategoryModal()">+ Category</button>
   </div>
-
-  <!-- ISLAM -->
-  <div class="res-section active" id="section-islam">
-    <div class="res-list" id="list-islam"></div>
-    <button class="add-res-btn" onclick="openAddModal('islam')">+ Add Islamic Resource</button>
-  </div>
-
-  <!-- SWE -->
-  <div class="res-section" id="section-swe">
-    <div class="res-list" id="list-swe"></div>
-    <button class="add-res-btn" onclick="openAddModal('swe')">+ Add SWE Resource</button>
-  </div>
-
-  <!-- LANGUAGES -->
-  <div class="res-section" id="section-lang">
-    <div class="res-list" id="list-lang"></div>
-    <button class="add-res-btn" onclick="openAddModal('lang')">+ Add Language Resource</button>
-  </div>
-
-  <!-- ENTERTAINMENT -->
-  <div class="res-section" id="section-ent">
-    <div class="res-list" id="list-ent"></div>
-    <button class="add-res-btn" onclick="openAddModal('ent')">+ Add Entertainment</button>
-  </div>
+  <div id="sections-container"></div>
 </div>
 
-<!-- ADD RESOURCE MODAL -->
+<!-- ADD CATEGORY MODAL -->
+<div class="overlay" id="addCategoryOverlay" onclick="overlayClose(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add New Category</div>
+    <div class="modal-sub">Create a custom category for your resources</div>
+
+    <div class="modal-field">
+      <div class="field-label">Category Name</div>
+      <input class="field-input" id="categoryName" type="text" placeholder="e.g. Health, Finance...">
+    </div>
+
+    <button class="modal-save"   onclick="saveCategory()">Create Category</button>
+    <button class="modal-cancel" onclick="closeCategoryModal()">Cancel</button>
+  </div>
+</div>
 <div class="overlay" id="addOverlay" onclick="overlayClose(event)">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -139,37 +73,9 @@
       <div class="field-label">URL (optional)</div>
       <input class="field-input" id="resUrl" type="url" placeholder="https://...">
     </div>
-    <div class="modal-row">
-      <div class="modal-field">
-        <div class="field-label">Energy needed</div>
-        <select class="field-select" id="resEnergy">
-          <option value="any">Any</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-          <option value="dead">Dead tired</option>
-        </select>
-      </div>
-      <div class="modal-field">
-        <div class="field-label">Min. time (min)</div>
-        <input class="field-input" id="resTime" type="number" placeholder="e.g. 15" min="1">
-      </div>
-    </div>
     <div class="modal-field">
-      <div class="field-label">Works when you're at</div>
-      <select class="field-select" id="resCtx">
-        <option value="any">Anywhere</option>
-        <option value="home">Home</option>
-        <option value="work">Work</option>
-        <option value="commute">Commuting</option>
-        <option value="outside">Outside</option>
-        <option value="cafe">Cafe</option>
-        <option value="travel">Traveling</option>
-      </select>
-    </div>
-    <div class="modal-field" id="subdivisionField" style="display:none">
-      <div class="field-label" id="subdivisionLabel">Subdivision</div>
-      <input class="field-input" id="resSubdivision" type="text" placeholder="e.g. French, Podcast, Anime, Grammar...">
+      <div class="field-label">Subcategory</div>
+      <select class="field-select" id="resSubcategory"></select>
     </div>
 
     <button class="modal-save"   onclick="saveResource()">Save Resource</button>

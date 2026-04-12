@@ -3,74 +3,43 @@
    ============================================================ */
 
 let state = {
-  ctx: null,
-  mins: null,
-  energy: null,
-  currentSuggestions: [],
-  currentIdx: 0,
   activeSection: 'islam',
+  activeSubcategory: 'General',
   resources: {},
-  addingFor: null,
+  searchQuery: '',
+  customCategories: {},
+  subcategories: {},
 };
 
-const STORAGE_KEY = 'fto_state_v5';
-const LEGACY_STORAGE_KEYS = ['fto_state_v4'];
+const STORAGE_KEY = 'fto_state_v8'; // Fresh start - no built-in categories
+const LEGACY_STORAGE_KEYS = ['fto_state_v7', 'fto_state_v6', 'fto_state_v5', 'fto_state_v4'];
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
 });
 
 // ---- CATEGORY META ----
-const CATEGORY_META = {
-  islam: { color: 'var(--c-islam)', short: 'IS', label: 'Islam' },
-  swe: { color: 'var(--c-swe)', short: 'SE', label: 'SWE' },
-  lang: { color: 'var(--c-lang)', short: 'LA', label: 'Languages' },
-  ent: { color: 'var(--c-ent)', short: 'ET', label: 'Entertainment' },
-};
+const CATEGORY_META = {};
 
-const STARTER_LANGUAGE_RESOURCES = [
-  { id: 'l1', name: 'BBC Learning English', url: 'https://www.bbc.co.uk/learningenglish', energy: 'medium', ctx: 'any', time: 10, level: 'B1', subdivision: 'English' },
-  { id: 'l2', name: 'TED Talks', url: 'https://www.ted.com/talks', energy: 'medium', ctx: 'any', time: 15, level: 'B2', subdivision: 'English' },
-  { id: 'l3', name: 'TV5Monde Apprendre', url: 'https://apprendre.tv5monde.com', energy: 'medium', ctx: 'home', time: 20, level: 'A2-B2', subdivision: 'French' },
-  { id: 'l4', name: 'RFI Francais Facile', url: 'https://www.rfi.fr/fr/podcasts/journal-en-francais-facile/', energy: 'low', ctx: 'commute', time: 10, level: 'A2-B1', subdivision: 'French' },
-  { id: 'l5', name: 'Italiano Automatico', url: 'https://www.youtube.com/@ItalianoAutomatico', energy: 'low', ctx: 'any', time: 15, level: 'B1-B2', subdivision: 'Italian' },
-  { id: 'l6', name: 'Loecsen Italian Phrases', url: 'https://www.loecsen.com/en/learn-italian', energy: 'low', ctx: 'any', time: 8, level: 'A1', subdivision: 'Italian' },
-  { id: 'l7', name: 'WaniKani', url: 'https://www.wanikani.com', energy: 'high', ctx: 'home', time: 10, level: 'N5-N4', subdivision: 'Japanese' },
-  { id: 'l8', name: 'JapanesePod101', url: 'https://www.japanesepod101.com', energy: 'medium', ctx: 'commute', time: 15, level: 'N5-N3', subdivision: 'Japanese' },
-  { id: 'l9', name: 'Arabic with Sam', url: 'https://www.youtube.com/@arabicwithsam', energy: 'medium', ctx: 'any', time: 15, level: 'A1-B1', subdivision: 'Arabic' },
-  { id: 'l10', name: 'Mango Languages Arabic', url: 'https://mangolanguages.com', energy: 'medium', ctx: 'any', time: 15, level: 'A1-A2', subdivision: 'Arabic' },
-  { id: 'l11', name: 'Deutsche Welle Learn German', url: 'https://www.dw.com/en/learn-german/s-2469', energy: 'medium', ctx: 'home', time: 20, level: 'A1-C1', subdivision: 'German' },
-  { id: 'l12', name: 'Easy German', url: 'https://www.youtube.com/@EasyGerman', energy: 'low', ctx: 'any', time: 10, level: 'A2-B2', subdivision: 'German' },
-];
+const STARTER_LANGUAGE_RESOURCES = [];
 
 // ---- DEFAULT RESOURCES ----
 const defaultResources = {
-  islam: [
-    { id: 'd1', name: 'Quran.com', url: 'https://quran.com', energy: 'any', ctx: 'any', time: 5 },
-    { id: 'd2', name: 'Bilal Assad (YouTube)', url: 'https://www.youtube.com/@BilalAssad', energy: 'low', ctx: 'any', time: 10 },
-    { id: 'd3', name: 'Seerah - Omar Suleiman', url: 'https://www.youtube.com/@YaqeenInstitute', energy: 'medium', ctx: 'commute', time: 20 },
-  ],
-  swe: [
-    { id: 'd4', name: 'LeetCode', url: 'https://leetcode.com', energy: 'high', ctx: 'any', time: 30 },
-    { id: 'd5', name: 'The Odin Project', url: 'https://www.theodinproject.com', energy: 'high', ctx: 'home', time: 60 },
-    { id: 'd6', name: 'CS50 Lecture', url: 'https://www.youtube.com/cs50', energy: 'medium', ctx: 'any', time: 20 },
-  ],
-  lang: STARTER_LANGUAGE_RESOURCES,
-  ent: [
-    { id: 'd14', name: 'Lex Fridman Podcast', url: 'https://lexfridman.com/podcast', energy: 'low', ctx: 'commute', time: 30, subdivision: 'Podcast' },
-    { id: 'd15', name: 'Kurzgesagt (YouTube)', url: 'https://www.youtube.com/@kurzgesagt', energy: 'low', ctx: 'any', time: 10, subdivision: 'Video' },
-    { id: 'd16', name: 'Chess.com', url: 'https://www.chess.com', energy: 'medium', ctx: 'any', time: 10, subdivision: 'Game' },
-  ],
+  islam: [],
+  swe: [],
+  lang: [],
+  ent: [],
 };
 
 // ---- STATE PERSISTENCE ----
 function getDefaultSnapshot() {
   return {
-    ctx: null,
-    mins: null,
-    energy: null,
-    activeSection: 'islam',
-    resources: JSON.parse(JSON.stringify(defaultResources)),
+    activeSection: null,
+    activeSubcategory: 'General',
+    resources: {},
+    searchQuery: '',
+    customCategories: {},
+    subcategories: {},
   };
 }
 
@@ -89,6 +58,10 @@ function normalizeStoredResources(resources) {
       if (cat === 'lang' && !next.subdivision && next.langName) next.subdivision = next.langName;
       delete next.entType;
       delete next.langName;
+      // Remove old fields
+      delete next.energy;
+      delete next.ctx;
+      delete next.time;
       return next;
     });
   });
@@ -109,6 +82,8 @@ function loadSavedState() {
       resources: (saved.resources && typeof saved.resources === 'object')
         ? normalizeStoredResources(saved.resources)
         : fallback.resources,
+      customCategories: saved.customCategories || {},
+      subcategories: saved.subcategories || {},
     };
   } catch {
     return getDefaultSnapshot();
@@ -117,36 +92,23 @@ function loadSavedState() {
 
 function persistState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    ctx: state.ctx,
-    mins: state.mins,
-    energy: state.energy,
     activeSection: state.activeSection,
+    activeSubcategory: state.activeSubcategory,
     resources: state.resources,
+    searchQuery: state.searchQuery,
+    customCategories: state.customCategories,
+    subcategories: state.subcategories,
   }));
 }
 
 // ---- HELPERS ----
-function getCtxLabel(ctx) {
-  return {
-    home: 'Home',
-    work: 'Work',
-    commute: 'Commuting',
-    outside: 'Outside',
-    cafe: 'Cafe',
-    travel: 'Traveling',
-  }[ctx] || 'Anywhere';
-}
-
-function applySelection(selector, value, attrName) {
-  document.querySelectorAll(selector).forEach((el) =>
-    el.classList.toggle('active', String(el.dataset[attrName]) === String(value)));
-}
-
 function escHtml(s) {
   return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function slugify(value) {
@@ -169,335 +131,412 @@ function getTopicSummary(item) {
   };
 }
 
+// ---- SEARCH AND FILTER ----
+function filterResources(resources, query) {
+  if (!query.trim()) return resources;
+  const lowerQuery = query.toLowerCase();
+  return resources.filter(item =>
+    item.name.toLowerCase().includes(lowerQuery) ||
+    (item.subdivision && item.subdivision.toLowerCase().includes(lowerQuery))
+  );
+}
+
 // ---- SECTION TABS ----
 function setActiveSection(tab, shouldSave = true) {
+  if (!tab) return;
   document.querySelectorAll('.tab-btn').forEach((btn) =>
     btn.classList.toggle('active', btn.dataset.tab === tab));
   document.querySelectorAll('.res-section').forEach((section) => section.classList.remove('active'));
   const section = document.getElementById('section-' + tab);
   if (section) section.classList.add('active');
   state.activeSection = tab;
+  state.activeSubcategory = 'General';
   if (shouldSave) persistState();
+  renderResources();
 }
 
-// ---- SUGGESTION ENGINE ----
-function energyScore(resEnergy, userEnergy) {
-  const map = { high: 3, medium: 2, low: 1, dead: 0 };
-  if (resEnergy === 'any' || !resEnergy) return true;
-  return (map[resEnergy] ?? 0) <= (map[userEnergy] ?? 2);
+// ---- RESOURCE RENDERING ----
+function getAvailableSubcategories(category) {
+  const fromState = (state.subcategories[category] || []).map(normalizeSubdivisionValue);
+  const fromItems = (state.resources[category] || [])
+    .map(item => normalizeSubdivisionValue(item.subdivision))
+    .filter(Boolean);
+  const all = new Set([...fromState, ...fromItems]);
+  if (!all.has('General')) all.add('General');
+  return [...all].sort();
 }
 
-function ctxMatch(resCtx, userCtx) {
-  return resCtx === 'any' || !resCtx || resCtx === userCtx;
-}
-
-function timeMatch(resTime, userMins) {
-  if (!userMins) return true;
-  return !resTime || resTime <= userMins;
-}
-
-function resourceFitScore(item) {
-  const energyRank = { dead: 0, low: 1, medium: 2, high: 3 };
-  let score = 0;
-
-  if (state.energy) {
-    if (item.energy === 'any' || !item.energy) {
-      score += 1;
-    } else if (energyScore(item.energy, state.energy)) {
-      score += 4;
-      score += 1 - Math.abs((energyRank[item.energy] ?? 1) - (energyRank[state.energy] ?? 1)) * 0.35;
-    } else {
-      score -= 6;
-    }
+function renderResources() {
+  if (!state.activeSection) return;
+  const section = state.activeSection;
+  const resources = state.resources[section] || [];
+  let filtered = filterResources(resources, state.searchQuery);
+  const activeSub = state.activeSubcategory || 'General';
+  if (activeSub !== 'General') {
+    filtered = filtered.filter(item => normalizeSubdivisionValue(item.subdivision) === activeSub);
   }
-
-  if (state.ctx) {
-    if (item.ctx === 'any' || !item.ctx) score += 0.5;
-    else if (ctxMatch(item.ctx, state.ctx)) score += 3;
-    else score -= 4;
-  }
-
-  if (state.mins) {
-    if (!item.time) score += 0.5;
-    else if (timeMatch(item.time, state.mins)) score += Math.max(1, 3 - ((state.mins - item.time) / Math.max(state.mins, 1)));
-    else score -= Math.min(6, (item.time - state.mins) / 5);
-  }
-
-  if (item._cat === 'swe' && state.energy === 'high') score += 1.2;
-  if (item._cat === 'islam' && (state.energy === 'medium' || state.energy === 'low')) score += 0.6;
-  if (item._cat === 'ent' && (state.energy === 'low' || state.energy === 'dead')) score += 1;
-  if (item._cat === 'lang' && state.mins && state.mins <= 15) score += 0.7;
-
-  return score;
-}
-
-function getCandidates() {
-  const allItems = [];
-  Object.entries(state.resources).forEach(([cat, items]) => {
-    items.forEach((item) => {
-      allItems.push({ ...item, _cat: cat, _score: resourceFitScore(item) });
-    });
-  });
-  return allItems
-    .filter((item) => item._score > -2)
-    .sort((a, b) => b._score - a._score);
-}
-
-function shuffleArray(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
-
-function regen() {
-  const candidates = getCandidates();
-  if (!candidates.length) {
-    state.currentSuggestions = [];
-  } else {
-    const [best, ...rest] = candidates;
-    state.currentSuggestions = [best, ...shuffleArray(rest)];
-  }
-  state.currentIdx = 0;
-  renderSuggestion();
-}
-
-function shuffle() {
-  if (!state.currentSuggestions.length) return;
-  state.currentIdx = (state.currentIdx + 1) % state.currentSuggestions.length;
-  renderSuggestion();
-}
-
-function renderSuggestion() {
-  const out = document.getElementById('suggestion-output');
-  if (!state.ctx && !state.energy && !state.mins) {
-    out.innerHTML = `<div class="suggestion-card" style="min-height:120px">
-      <div class="accent-line" style="background:var(--text-muted)"></div>
-      <div class="empty-state"><div class="big">?</div>Select your context, time, and energy above</div>
-    </div>`;
-    return;
-  }
-
-  if (!state.currentSuggestions.length) {
-    out.innerHTML = `<div class="suggestion-card" style="min-height:120px">
-      <div class="accent-line" style="background:var(--text-muted)"></div>
-      <div class="empty-state"><div class="big">0</div>No resources match right now. Add some below.</div>
-    </div>`;
-    return;
-  }
-
-  const resource = state.currentSuggestions[state.currentIdx];
-  const topic = getTopicSummary(resource);
-  const contextLabel = state.ctx ? getCtxLabel(state.ctx) : '';
-  const timeLabel = state.mins ? (state.mins >= 999 ? 'Open-ended' : `${state.mins} min`) : '';
-  const badge = [contextLabel, timeLabel].filter(Boolean).join(' | ');
-  const topicLine = topic.topic && topic.topic !== resource.name
-    ? `Best-fit topic right now: ${topic.topic}`
-    : 'Best-fit pick for your current setup.';
-
-  const resourceHtml = resource.url
-    ? `<a class="s-resource" href="${resource.url}" target="_blank" rel="noopener" style="--accent:${topic.accent}">
-        <div class="s-res-icon" style="font-size:16px">${topic.short}</div>
-        <div class="s-res-info">
-          <div class="s-res-name">${escHtml(resource.name)}</div>
-          <div class="s-res-sub">${escHtml(topicLine)}</div>
-        </div>
-        <div class="s-res-arrow">Open -></div>
-      </a>`
-    : `<div class="s-resource">
-        <div class="s-res-icon">${topic.short}</div>
-        <div class="s-res-info">
-          <div class="s-res-name">${escHtml(resource.name)}</div>
-          <div class="s-res-sub">${escHtml(topicLine)}</div>
-        </div>
-      </div>`;
-
-  out.innerHTML = `
-    <div class="suggestion-card" style="--accent:${topic.accent}">
-      <div class="accent-line"></div>
-      <div class="s-tag">${escHtml(topic.categoryLabel)}</div>
-      ${badge ? `<div class="s-context-badge">${badge}</div>` : ''}
-      <div class="s-title">${escHtml(resource.name)}</div>
-      <div class="s-desc">${getSuggestionDesc(state.energy, state.ctx, topic.topic)}</div>
-      <div class="s-resources">${resourceHtml}</div>
-      ${resource.time ? `<div class="s-duration">~${resource.time} min recommended</div>` : ''}
-    </div>`;
-}
-
-function getSuggestionDesc(energy, ctx, topic) {
-  const ePhrase = {
-    high: 'You have good energy. This is a strong time to do something demanding.',
-    medium: 'Steady energy. Good for practice, reading, or light focus.',
-    low: 'Low energy. Lighter options make more sense right now.',
-    dead: 'You are tired. Passive or very easy options are the better fit.',
-  };
-  const cPhrase = {
-    commute: 'Audio or quick sessions fit commuting well.',
-    work: 'This works as a productive break without too much switching cost.',
-    outside: 'This is easy to do from your phone while away from a desk.',
-    cafe: 'This fits a cafe session nicely.',
-    home: 'Home gives this option the best chance of going well.',
-    travel: 'Portable and low-friction is a good match while traveling.',
-  };
-  const tPhrase = topic ? `${topic} came out on top from your saved resources.` : '';
-  return [ePhrase[energy], cPhrase[ctx], tPhrase].filter(Boolean).join(' ') || 'A good use of your free time.';
-}
-
-// ---- RESOURCE LISTS ----
-function renderAllLists() {
-  ['islam', 'swe', 'lang', 'ent'].forEach(renderList);
-}
-
-function renderList(cat) {
-  const listEl = document.getElementById('list-' + cat);
+  const listEl = document.getElementById('list-' + section);
   if (!listEl) return;
 
-  const filtered = state.resources[cat] || [];
+  renderSubcategoryButtons(section);
 
-  if (!filtered.length) {
-    listEl.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:11px;letter-spacing:1px">No resources yet - add one below</div>';
-    return;
-  }
+  const visibleSubs = activeSub === 'General'
+    ? getAvailableSubcategories(section)
+    : [activeSub];
 
-  listEl.innerHTML = filtered.map((item) => {
-    const meta = CATEGORY_META[cat] || CATEGORY_META.islam;
-    const details = [];
-    if (item.time) details.push(`${item.time} min`);
-    if (item.energy && item.energy !== 'any') details.push(item.energy);
-    if (item.ctx && item.ctx !== 'any') details.push(getCtxLabel(item.ctx));
-    if (item.level) details.push(String(item.level).toUpperCase());
-    if (item.subdivision) details.push(item.subdivision);
+  const groups = visibleSubs.map(sub => ({
+    name: sub,
+    items: filtered.filter(item => (normalizeSubdivisionValue(item.subdivision) || 'General') === sub),
+  }));
 
-    const openBtn = item.url
-      ? `<a class="res-open-btn" href="${item.url}" target="_blank" rel="noopener">Open</a>`
-      : '<span class="res-open-btn" style="opacity:0.3;cursor:default">No link</span>';
+  const html = groups.map(group => {
+    const subHeader = group.name !== 'General' ? `<div class="subcategory-header">${escHtml(group.name)}</div>` : '';
+    const itemsHtml = group.items.map(item => {
+      const topic = getTopicSummary({ ...item, _cat: section });
+      const url = item.url ? `href="${escHtml(item.url)}" target="_blank" rel="noopener"` : '';
+      const openBtn = item.url
+        ? `<a class="res-open-btn" ${url}>Open ↗</a>`
+        : `<span class="res-open-btn" style="opacity:0.5; cursor:not-allowed;">No URL</span>`;
 
-    return `<div class="res-item" data-id="${item.id}" data-cat="${cat}">
-      <div class="res-item-dot" style="background:${meta.color}"></div>
-      <div class="res-item-info">
-        <div class="res-item-name">${escHtml(item.name)}</div>
-        <div class="res-item-meta">${escHtml(details.join(' | ') || 'any')}</div>
-      </div>
-      <div class="res-item-actions">
-        ${openBtn}
-        <button class="res-del-btn" onclick="deleteResource('${cat}','${item.id}')">x</button>
-      </div>
-    </div>`;
+      return `<div class="res-item">
+        <div class="res-item-dot" style="background:${topic.accent}"></div>
+        <div class="res-item-info">
+          <div class="res-item-name">${escHtml(item.name)}</div>
+          <div class="res-item-meta">${escHtml(topic.topic)}</div>
+        </div>
+        <div class="res-item-actions">
+          ${openBtn}
+          <button class="res-del-btn" onclick="deleteResource('${item.id}', '${section}')">×</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    if (!itemsHtml) {
+      if (group.name === 'General') {
+        return `<div class="subcategory-header">${escHtml(group.name)}</div><div class="empty-subcategory">No items in this section yet.</div>`;
+      }
+      return '';
+    }
+
+    return subHeader + itemsHtml;
   }).join('');
-}
 
-function deleteResource(cat, id) {
-  state.resources[cat] = (state.resources[cat] || []).filter((item) => item.id !== id);
-  persistState();
-  renderList(cat);
-  regen();
-  showToast('Resource removed');
-}
+  listEl.innerHTML = html;
 
-// ---- ADD MODAL ----
-function openAddModal(cat) {
-  state.addingFor = cat;
-  document.getElementById('modalTitle').textContent = `Add ${(CATEGORY_META[cat]?.label || cat)} Resource`;
-  document.getElementById('modalSub').textContent = 'Smart suggestions will use this based on your energy, context, and time.';
-  ['resName', 'resUrl', 'resTime', 'resSubdivision'].forEach((id) => { document.getElementById(id).value = ''; });
-  document.getElementById('resEnergy').value = 'any';
-  document.getElementById('resCtx').value = 'any';
-
-  const subdivisionField = document.getElementById('subdivisionField');
-  const subdivisionLabel = document.getElementById('subdivisionLabel');
-  if (subdivisionField) subdivisionField.style.display = (cat === 'ent' || cat === 'lang') ? '' : 'none';
-  if (subdivisionLabel) {
-    subdivisionLabel.textContent = cat === 'lang'
-      ? 'Language / subdivision'
-      : 'Entertainment type / subdivision';
+  if (filtered.length === 0 && resources.length > 0) {
+    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">No resources match your search.</div>';
+  } else if (resources.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">No resources yet. Add some below!</div>';
   }
+}
+
+// ---- MODAL FUNCTIONS ----
+function openAddModal(category) {
+  state.addingFor = category;
+  const meta = CATEGORY_META[category];
+  document.getElementById('modalTitle').textContent = `Add ${meta.label} Resource`;
+  document.getElementById('modalSub').textContent = `This will be added to your ${meta.label.toLowerCase()} collection.`;
+
+  document.getElementById('resName').value = '';
+  document.getElementById('resUrl').value = '';
+  const select = document.getElementById('resSubcategory');
+  select.innerHTML = getAvailableSubcategories(category)
+    .map((sub) => `<option value="${escHtml(sub)}">${escHtml(sub)}</option>`)
+    .join('');
+  select.value = 'General';
 
   document.getElementById('addOverlay').classList.add('open');
 }
 
 function closeModal() {
   document.getElementById('addOverlay').classList.remove('open');
+  state.addingFor = null;
 }
 
-function overlayClose(e) {
-  if (e.target === document.getElementById('addOverlay')) closeModal();
+function overlayClose(event) {
+  if (event.target.id === 'addOverlay') closeModal();
+  if (event.target.id === 'addCategoryOverlay') closeCategoryModal();
 }
 
 function saveResource() {
   const name = document.getElementById('resName').value.trim();
+  const url = document.getElementById('resUrl').value.trim();
+  const subcategory = document.getElementById('resSubcategory').value;
   if (!name) {
     showToast('Please enter a name');
     return;
   }
 
-  const cat = state.addingFor;
-  const resource = {
-    id: 'r' + Date.now(),
+  const category = state.addingFor;
+  if (!state.resources[category]) state.resources[category] = [];
+
+  const newItem = {
+    id: Date.now().toString(),
     name,
-    url: document.getElementById('resUrl').value.trim() || null,
-    energy: document.getElementById('resEnergy').value,
-    time: parseInt(document.getElementById('resTime').value, 10) || null,
-    ctx: document.getElementById('resCtx').value,
+    url: url || null,
+    subdivision: subcategory === 'General' ? null : subcategory,
   };
 
-  if (cat === 'ent' || cat === 'lang') {
-    resource.subdivision = normalizeSubdivisionValue(document.getElementById('resSubdivision').value);
+  state.resources[category].push(newItem);
+  persistState();
+  renderResources();
+  closeModal();
+  showToast('Resource added!');
+}
+
+function openAddCategoryModal() {
+  document.getElementById('categoryName').value = '';
+  document.getElementById('addCategoryOverlay').classList.add('open');
+}
+
+function closeCategoryModal() {
+  document.getElementById('addCategoryOverlay').classList.remove('open');
+}
+
+function saveCategory() {
+  const name = document.getElementById('categoryName').value.trim();
+  if (!name) {
+    showToast('Please enter a category name');
+    return;
   }
 
-  if (!state.resources[cat]) state.resources[cat] = [];
-  state.resources[cat].unshift(resource);
-  persistState();
+  const slug = slugify(name);
+  if (CATEGORY_META[slug]) {
+    showToast('Category already exists');
+    return;
+  }
 
-  renderList(cat);
-  regen();
-  closeModal();
-  showToast('Resource added');
+  const meta = {
+    color: 'var(--accent)', // Default color
+    short: name.substring(0, 2).toUpperCase(),
+    label: name,
+  };
+
+  // Add to meta
+  CATEGORY_META[slug] = meta;
+  state.customCategories[slug] = meta;
+
+  addCategoryTab(slug, name);
+
+  // Initialize resources and subcategories
+  if (!state.resources[slug]) state.resources[slug] = [];
+  if (!state.subcategories[slug]) state.subcategories[slug] = [];
+
+  persistState();
+  closeCategoryModal();
+  showToast('Category added!');
+}
+
+function addSubcategory(category, name) {
+  const value = normalizeSubdivisionValue(name);
+  if (!value) return;
+  if (!state.subcategories[category]) state.subcategories[category] = [];
+  if (state.subcategories[category].includes(value)) {
+    showToast('Subcategory already exists');
+    return;
+  }
+  state.subcategories[category].push(value);
+  persistState();
+  renderResources();
+  showToast('Subcategory added!');
+}
+
+function setActiveSubcategory(category, subcategory) {
+  state.activeSubcategory = subcategory || 'General';
+  persistState();
+  renderSubcategoryButtons(category);
+  renderResources();
+}
+
+function renderSubcategoryButtons(category) {
+  const row = document.getElementById('subcats-' + category);
+  if (!row) return;
+  const available = getAvailableSubcategories(category);
+  row.innerHTML = available.map((sub) => `
+    <div class="subcat-btn-wrapper">
+      <button class="subcat-btn ${state.activeSubcategory === sub ? 'active' : ''}"
+        type="button"
+        data-category="${escHtml(category)}"
+        data-sub="${escHtml(sub)}">
+        ${escHtml(sub)}
+      </button>
+      ${sub !== 'General' ? `<button class="subcat-del-btn" type="button" data-category="${escHtml(category)}" data-sub="${escHtml(sub)}" title="Delete">×</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function deleteResource(id, category) {
+  state.resources[category] = state.resources[category].filter(item => item.id !== id);
+  persistState();
+  renderResources();
+  showToast('Resource deleted');
+}
+
+function deleteSubcategory(category, subcategory) {
+  if (subcategory === 'General') {
+    showToast('Cannot delete General');
+    return;
+  }
+  if (!confirm(`Delete \"${subcategory}\" and all its resources?`)) return;
+  
+  // Remove subcategory from list
+  if (!state.subcategories[category]) state.subcategories[category] = [];
+  state.subcategories[category] = state.subcategories[category].filter(s => s !== subcategory);
+  
+  // Delete all resources in this subcategory
+  if (state.resources[category]) {
+    state.resources[category] = state.resources[category].filter(item => 
+      normalizeSubdivisionValue(item.subdivision) !== subcategory
+    );
+  }
+  
+  if (state.activeSubcategory === subcategory) {
+    state.activeSubcategory = 'General';
+  }
+  persistState();
+  renderResources();
+  showToast('Subcategory and its resources deleted');
+}
+
+function deleteCategory(slug) {
+  if (!CATEGORY_META[slug]) {
+    showToast('Category not found');
+    return;
+  }
+  const label = CATEGORY_META[slug].label;
+  if (!confirm(`Delete "${label}" and all its resources?`)) return;
+  
+  delete CATEGORY_META[slug];
+  delete state.customCategories[slug];
+  delete state.resources[slug];
+  delete state.subcategories[slug];
+  
+  const tabWrapper = document.querySelector(`button[data-tab="${slug}"]`)?.closest('div');
+  if (tabWrapper) tabWrapper.remove();
+  const section = document.getElementById('section-' + slug);
+  if (section) section.remove();
+  
+  if (state.activeSection === slug) {
+    state.activeSection = 'islam';
+  }
+  persistState();
+  setActiveSection(state.activeSection, false);
+  showToast(`${label} deleted`);
+}
+
+// ---- SEARCH ----
+function handleSearch() {
+  const query = document.getElementById('searchInput').value;
+  state.searchQuery = query;
+  renderResources();
+}
+
+function handleSubcategoryActions(event) {
+  const addButton = event.target.closest('.subcat-add-btn');
+  if (addButton) {
+    const manager = addButton.closest('.subcat-inline');
+    const input = manager.querySelector('.subcat-input');
+    addSubcategory(manager.dataset.category, input.value);
+    input.value = '';
+    return;
+  }
+
+  const filterButton = event.target.closest('.subcat-btn');
+  if (filterButton) {
+    setActiveSubcategory(filterButton.dataset.category, filterButton.dataset.sub);
+    return;
+  }
+
+  const delButton = event.target.closest('.subcat-del-btn');
+  if (delButton) {
+    deleteSubcategory(delButton.dataset.category, delButton.dataset.sub);
+    return;
+  }
+
+  const catDelButton = event.target.closest('.tab-del-btn');
+  if (catDelButton) {
+    deleteCategory(catDelButton.dataset.tab);
+  }
+}
+
+// ---- TOAST ----
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // ---- INIT ----
 function init() {
   const saved = loadSavedState();
-  Object.assign(state, {
-    ctx: saved.ctx,
-    mins: saved.mins,
-    energy: saved.energy,
-    activeSection: saved.activeSection,
-    resources: normalizeStoredResources(saved.resources),
+  state = { ...state, ...saved };
+
+  // Restore custom categories
+  Object.entries(state.customCategories).forEach(([slug, meta]) => {
+    CATEGORY_META[slug] = meta;
+    addCategoryTab(slug, meta.label);
   });
 
-  applySelection('.ctx-btn', state.ctx, 'ctx');
-  applySelection('.time-btn', state.mins, 'mins');
-  applySelection('.e-btn', state.energy, 'energy');
-
-  setActiveSection(state.activeSection, false);
-  renderAllLists();
-  regen();
-
-  document.querySelectorAll('.ctx-btn').forEach((btn) => btn.addEventListener('click', () => {
-    document.querySelectorAll('.ctx-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.ctx = btn.dataset.ctx;
-    regen();
-    persistState();
-  }));
-
-  document.querySelectorAll('.time-btn').forEach((btn) => btn.addEventListener('click', () => {
-    document.querySelectorAll('.time-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.mins = parseInt(btn.dataset.mins, 10);
-    regen();
-    persistState();
-  }));
-
-  document.querySelectorAll('.e-btn').forEach((btn) => btn.addEventListener('click', () => {
-    document.querySelectorAll('.e-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.energy = btn.dataset.energy;
-    regen();
-    persistState();
-  }));
-
-  document.getElementById('sectionTabs')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.tab-btn');
+  // Set up event listeners
+  document.getElementById('sectionTabs')?.addEventListener('click', (event) => {
+    const btn = event.target.closest('.tab-btn');
     if (!btn) return;
     setActiveSection(btn.dataset.tab);
   });
 
+  document.getElementById('searchInput')?.addEventListener('input', handleSearch);
+  document.querySelector('.app')?.addEventListener('click', handleSubcategoryActions);
+  document.getElementById('sections-container')?.addEventListener('click', handleSubcategoryActions);
+
+  // Initial render - only if there are categories
+  if (state.activeSection && Object.keys(CATEGORY_META).length > 0) {
+    setActiveSection(state.activeSection, false);
+  }
 }
+
+function addCategoryTab(slug, label) {
+  const tabsEl = document.getElementById('sectionTabs');
+  const newTab = document.createElement('button');
+  newTab.className = 'tab-btn';
+  newTab.dataset.tab = slug;
+  newTab.textContent = label;
+  const tabWrapper = document.createElement('div');
+  tabWrapper.style.display = 'flex';
+  tabWrapper.style.alignItems = 'center';
+  tabWrapper.style.gap = '4px';
+  tabWrapper.appendChild(newTab);
+  
+  const delBtn = document.createElement('button');
+  delBtn.className = 'tab-del-btn';
+  delBtn.dataset.tab = slug;
+  delBtn.textContent = '×';
+  delBtn.title = 'Delete category';
+  tabWrapper.appendChild(delBtn);
+  
+  tabsEl.insertBefore(tabWrapper, document.querySelector('.add-category-btn'));
+
+  // Add section
+  const containerEl = document.getElementById('sections-container');
+  const newSection = document.createElement('div');
+  newSection.className = 'res-section';
+  newSection.id = 'section-' + slug;
+  newSection.innerHTML = `
+    <div class="section-toolbar">
+      <div class="subcat-row" id="subcats-${slug}"></div>
+      <div class="subcat-inline" data-category="${slug}">
+        <input class="subcat-input" type="text" placeholder="Create new subcategory">
+        <button class="subcat-add-btn">Add</button>
+      </div>
+    </div>
+    <div class="res-list" id="list-${slug}"></div>
+    <button class="add-res-btn" onclick="openAddModal('${slug}')">+ Add ${label} Resource</button>
+  `;
+  containerEl.appendChild(newSection);
+  
+  // Set as active if it's the first one
+  if (!state.activeSection) {
+    setActiveSection(slug, false);
+  }
+}
+
